@@ -45,8 +45,8 @@ class Validation
         $this->inputs    = $this->resolveInputAttributes($inputs);
         $this->messages  = $messages;
         $this->errors    = new ErrorBag;
-        foreach ($rules as $attributeKey => $rules) {
-            $this->addAttribute($attributeKey, $rules);
+        foreach ($rules as $attributeKey => $rule) {
+            $this->addAttribute($attributeKey, $rule);
         }
     }
 
@@ -222,7 +222,7 @@ class Validation
      * Gather a copy of the attribute data filled with any missing attributes.
      * Adapted from: https://github.com/illuminate/validation/blob/v5.3.23/Validator.php#L334
      *
-     * @param  string  $attribute
+     * @param  string  $attributeKey
      * @return array
      */
     protected function initializeAttributeOnData(string $attributeKey): array
@@ -334,7 +334,7 @@ class Validation
     protected function isEmptyValue(mixed $value): bool
     {
         $requiredValidator = new Required;
-        return false === $requiredValidator->check($value, []);
+        return false === $requiredValidator->check($value);
     }
 
     /**
@@ -420,9 +420,9 @@ class Validation
             'value'     => $value,
         ]);
 
-        foreach ($vars as $key => $value) {
-            $value   = $this->stringify($value);
-            $message = str_replace(':' . $key, $value, $message);
+        foreach ($vars as $key => $val) {
+            $val     = $this->stringify($val);
+            $message = str_replace(':' . $key, $val, $message);
         }
 
         // Replace key indexes
@@ -698,7 +698,7 @@ class Validation
     /**
      * Get invalid data
      *
-     * @return void
+     * @return array
      */
     public function getInvalidData(): array
     {

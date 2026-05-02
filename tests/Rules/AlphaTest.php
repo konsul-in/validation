@@ -9,6 +9,7 @@ use stdClass;
 class AlphaTest extends TestCase
 {
 
+    protected \Rakit\Validation\Rule $rule;
     public function setUp(): void
     {
         $this->rule = new Alpha;

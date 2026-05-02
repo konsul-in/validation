@@ -103,10 +103,8 @@ class ValidatorTest extends TestCase
         $this->assertTrue($validation->passes());
     }
 
-    /**
-     * @dataProvider getSamplesMissingKeyFromUploadedFileValue
-     */
-    public function testMissingKeyUploadedFile($uploadedFile)
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSamplesMissingKeyFromUploadedFileValue')]
+    public function testMissingKeyUploadedFile(array $uploadedFile)
     {
         $validation = $this->validator->validate([
             'file' => $uploadedFile,
@@ -824,11 +822,11 @@ class ValidatorTest extends TestCase
         $this->assertFalse($validation->passes());
     }
 
-    /**
+        /**
      * Test root asterisk validation.
      *
-     * @dataProvider rootAsteriskProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rootAsteriskProvider')]
     public function testRootAsteriskValidation(array $data, array $rules, $errors = null)
     {
         $validation = $this->validator->validate($data, $rules);

@@ -7,6 +7,8 @@ use Rakit\Validation\Rules\Boolean;
 
 class BooleanTest extends TestCase
 {
+
+    protected \Rakit\Validation\Rule $rule;
     public function setUp(): void
     {
         $this->rule = new Boolean;

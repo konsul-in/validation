@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 class InTest extends TestCase
 {
 
+    protected \Rakit\Validation\Rule $rule;
     public function setUp(): void
     {
         $this->rule = new In;

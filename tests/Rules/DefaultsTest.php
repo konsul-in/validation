@@ -7,6 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 class DefaultsTest extends TestCase
 {
+
+    protected \Rakit\Validation\Rule $rule;
     public function setUp(): void
     {
         $this->rule = new Defaults;

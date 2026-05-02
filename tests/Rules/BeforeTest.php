@@ -18,10 +18,8 @@ class BeforeTest extends TestCase
         $this->validator = new Before();
     }
 
-    /**
-     * @dataProvider getValidDates
-     */
-    public function testOnlyAWellFormedDateCanBeValidated($date)
+    #[\PHPUnit\Framework\Attributes\DataProvider('getValidDates')]
+    public function testOnlyAWellFormedDateCanBeValidated(mixed $date)
     {
         $this->assertTrue(
             $this->validator->fillParameters(["next week"])->check($date)
@@ -42,10 +40,8 @@ class BeforeTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getInvalidDates
-     */
-    public function testANonWellFormedDateCannotBeValidated($date)
+    #[\PHPUnit\Framework\Attributes\DataProvider('getInvalidDates')]
+    public function testANonWellFormedDateCannotBeValidated(mixed $date)
     {
         $this->expectException(\Exception::class);
         $this->validator->fillParameters(["tomorrow"])->check($date);

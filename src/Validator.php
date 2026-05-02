@@ -205,7 +205,7 @@ class Validator
     /**
      * Get $this->useHumanizedKeys value
      *
-     * @return void
+     * @return bool
      */
     public function isUsingHumanizedKey(): bool
     {

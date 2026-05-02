@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 class EmailTest extends TestCase
 {
 
+    protected \Rakit\Validation\Rule $rule;
     public function setUp(): void
     {
         $this->rule = new Email;

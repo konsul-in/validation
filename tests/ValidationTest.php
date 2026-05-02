@@ -9,12 +9,12 @@ use ReflectionClass;
 
 class ValidationTest extends TestCase
 {
-    /**
+        /**
      * @param string $rules
      * @param array $expectedResult
      *
-     * @dataProvider parseRuleProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('parseRuleProvider')]
     public function testParseRule($rules, $expectedResult)
     {
         $class = new ReflectionClass(Validation::class);

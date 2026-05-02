@@ -18,20 +18,16 @@ class AfterTest extends TestCase
         $this->validator = new After();
     }
 
-    /**
-     * @dataProvider getValidDates
-     */
-    public function testOnlyAWellFormedDateCanBeValidated($date)
+    #[\PHPUnit\Framework\Attributes\DataProvider('getValidDates')]
+    public function testOnlyAWellFormedDateCanBeValidated(mixed $date)
     {
         $this->assertTrue(
             $this->validator->fillParameters(["3 years ago"])->check($date)
         );
     }
 
-    /**
-     * @dataProvider getInvalidDates
-     */
-    public function testANonWellFormedDateCannotBeValidated($date)
+    #[\PHPUnit\Framework\Attributes\DataProvider('getInvalidDates')]
+    public function testANonWellFormedDateCannotBeValidated(mixed $date)
     {
         $this->expectException(\Exception::class);
         $this->validator->fillParameters(["tomorrow"])->check($date);
