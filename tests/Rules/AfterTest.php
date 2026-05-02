@@ -1,10 +1,9 @@
 <?php
-
 namespace Rakit\Validation\Tests;
 
-use Rakit\Validation\Rules\After;
-use PHPUnit\Framework\TestCase;
 use DateTime;
+use PHPUnit\Framework\TestCase;
+use Rakit\Validation\Rules\After;
 
 class AfterTest extends TestCase
 {
@@ -14,7 +13,7 @@ class AfterTest extends TestCase
      */
     protected $validator;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->validator = new After();
     }
@@ -31,36 +30,34 @@ class AfterTest extends TestCase
 
     /**
      * @dataProvider getInvalidDates
-     * @expectedException \Exception
      */
     public function testANonWellFormedDateCannotBeValidated($date)
     {
+        $this->expectException(\Exception::class);
         $this->validator->fillParameters(["tomorrow"])->check($date);
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testUserProvidedParamCannotBeValidatedBecauseItIsInvalid()
     {
+        $this->expectException(\Exception::class);
         $this->validator->fillParameters(["to,morrow"])->check("now");
     }
 
-    public function getInvalidDates()
+    public static function getInvalidDates()
     {
         $now = new DateTime();
 
         return [
-            [12], //12 instead of 2012
+            [12],   //12 instead of 2012
             ["09"], //like '09 instead of 2009
             [$now->format("Y m d")],
             [$now->format("Y m d h:i:s")],
-            ["tommorow"], //typo
-            ["lasst year"] //typo
+            ["tommorow"],   //typo
+            ["lasst year"], //typo
         ];
     }
 
-    public function getValidDates()
+    public static function getValidDates()
     {
         $now = new DateTime();
 
@@ -70,14 +67,14 @@ class AfterTest extends TestCase
             [$now->format("Y-m-d h:i:s")],
             ["now"],
             ["tomorrow"],
-            ["2 years ago"]
+            ["2 years ago"],
         ];
     }
 
     public function testProvidedDateFailsValidation()
     {
 
-        $now = (new DateTime("today"))->format("Y-m-d");
+        $now   = (new DateTime("today"))->format("Y-m-d");
         $today = "today";
 
         $this->assertFalse(

@@ -785,9 +785,9 @@ class MimeTypeGuesser
      * @param string $mimeType
      * @return string|null
      */
-    public function getExtension(string $mimeType)
+    public function getExtension(string $mimeType): ?string
     {
-        return isset($this->mimeTypes[$mimeType])? $this->mimeTypes[$mimeType] : null;
+        return $this->mimeTypes[$mimeType] ?? null;
     }
 
     /**

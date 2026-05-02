@@ -11,17 +11,13 @@ class UploadedFile extends Rule implements BeforeValidate
 {
     use Traits\FileTrait, Traits\SizeTrait;
 
-    /** @var string */
-    protected $message = "The :attribute is not valid uploaded file";
+    protected string $message = "The :attribute is not valid uploaded file";
 
-    /** @var string|int */
-    protected $maxSize = null;
+    protected string|int|null $maxSize = null;
 
-    /** @var string|int */
-    protected $minSize = null;
+    protected string|int|null $minSize = null;
 
-    /** @var array */
-    protected $allowedTypes = [];
+    protected array $allowedTypes = [];
 
     /**
      * Given $params and assign $this->params
@@ -127,7 +123,7 @@ class UploadedFile extends Rule implements BeforeValidate
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $minSize = $this->parameter('min_size');
         $maxSize = $this->parameter('max_size');

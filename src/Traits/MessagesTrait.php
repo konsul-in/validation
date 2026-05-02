@@ -5,8 +5,7 @@ namespace Rakit\Validation\Traits;
 trait MessagesTrait
 {
 
-    /** @var array */
-    protected $messages = [];
+    protected array $messages = [];
 
     /**
      * Given $key and $message to set message

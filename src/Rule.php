@@ -1,36 +1,27 @@
 <?php
-
 namespace Rakit\Validation;
 
 use Rakit\Validation\MissingRequiredParameterException;
 
 abstract class Rule
 {
-    /** @var string */
-    protected $key;
+    protected string $key = '';
 
-    /** @var \Rakit\Validation\Attribute|null */
-    protected $attribute;
+    protected ?Attribute $attribute = null;
 
-    /** @var \Rakit\Validation\Validation|null */
-    protected $validation;
+    protected ?Validation $validation = null;
 
-    /** @var bool */
-    protected $implicit = false;
+    protected bool $implicit = false;
 
-    /** @var array */
-    protected $params = [];
+    protected array $params = [];
 
-    /** @var array */
-    protected $paramsTexts = [];
+    protected array $paramsTexts = [];
 
-    /** @var array */
-    protected $fillableParams = [];
+    protected array $fillableParams = [];
 
-    /** @var string */
-    protected $message = "The :attribute is invalid";
+    protected string $message = "The :attribute is invalid";
 
-    abstract public function check($value): bool;
+    abstract public function check(mixed $value): bool;
 
     /**
      * Set Validation class instance
@@ -145,7 +136,7 @@ abstract class Rule
      */
     public function parameter(string $key)
     {
-        return isset($this->params[$key])? $this->params[$key] : null;
+        return $this->params[$key] ?? null;
     }
 
     /**
@@ -223,7 +214,7 @@ abstract class Rule
     protected function requireParameters(array $params)
     {
         foreach ($params as $param) {
-            if (!isset($this->params[$param])) {
+            if (! isset($this->params[$param])) {
                 $rule = $this->getKey();
                 throw new MissingRequiredParameterException("Missing required parameter '{$param}' on rule '{$rule}'");
             }

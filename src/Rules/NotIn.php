@@ -1,5 +1,4 @@
 <?php
-
 namespace Rakit\Validation\Rules;
 
 use Rakit\Validation\Helper;
@@ -8,11 +7,9 @@ use Rakit\Validation\Rule;
 class NotIn extends Rule
 {
 
-    /** @var string */
-    protected $message = "The :attribute is not allowing :disallowed_values";
+    protected string $message = "The :attribute is not allowing :disallowed_values";
 
-    /** @var bool */
-    protected $strict = false;
+    protected bool $strict = false;
 
     /**
      * Given $params and assign the $this->params
@@ -46,16 +43,16 @@ class NotIn extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $this->requireParameters(['disallowed_values']);
 
         $disallowedValues = (array) $this->parameter('disallowed_values');
 
-        $and = $this->validation ? $this->validation->getTranslation('and') : 'and';
+        $and                  = $this->validation ? $this->validation->getTranslation('and') : 'and';
         $disallowedValuesText = Helper::join(Helper::wraps($disallowedValues, "'"), ', ', ", {$and} ");
         $this->setParameterText('disallowed_values', $disallowedValuesText);
 
-        return !in_array($value, $disallowedValues, $this->strict);
+        return ! in_array($value, $disallowedValues, $this->strict);
     }
 }

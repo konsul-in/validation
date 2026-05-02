@@ -8,8 +8,7 @@ use Rakit\Validation\Rule;
 class Extension extends Rule
 {
     
-    /** @var string */
-    protected $message = "The :attribute must be a :allowed_extensions file";
+    protected string $message = "The :attribute must be a :allowed_extensions file";
 
      /**
      * Given $params and assign the $this->params
@@ -32,7 +31,7 @@ class Extension extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $this->requireParameters(['allowed_extensions']);
         $allowedExtensions = $this->parameter('allowed_extensions');

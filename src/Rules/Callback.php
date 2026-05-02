@@ -9,11 +9,9 @@ use Closure;
 class Callback extends Rule
 {
 
-    /** @var string */
-    protected $message = "The :attribute is not valid";
+    protected string $message = "The :attribute is not valid";
 
-    /** @var array */
-    protected $fillableParams = ['callback'];
+    protected array $fillableParams = ['callback'];
 
     /**
      * Set the Callback closure
@@ -33,7 +31,7 @@ class Callback extends Rule
      * @return bool
      * @throws \Exception
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $this->requireParameters($this->fillableParams);
 

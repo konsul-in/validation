@@ -7,8 +7,7 @@ use Rakit\Validation\Rule;
 class AlphaDash extends Rule
 {
 
-    /** @var string */
-    protected $message = "The :attribute only allows a-z, 0-9, _ and -";
+    protected string $message = "The :attribute only allows a-z, 0-9, _ and -";
 
     /**
      * Check the $value is valid
@@ -16,7 +15,7 @@ class AlphaDash extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         if (! is_string($value) && ! is_numeric($value)) {
             return false;

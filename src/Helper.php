@@ -63,7 +63,7 @@ class Helper
      * @param  mixed       $default
      * @return mixed
      */
-    public static function arrayGet(array $array, $key, $default = null)
+    public static function arrayGet(array $array, string|int|null $key, mixed $default = null): mixed
     {
         if (is_null($key)) {
             return $array;
@@ -117,7 +117,7 @@ class Helper
      * @param bool              $overwrite
      * @return mixed
      */
-    public static function arraySet(&$target, $key, $value, $overwrite = true): array
+    public static function arraySet(mixed &$target, string|array|null $key, mixed $value, bool $overwrite = true): array
     {
         if (is_null($key)) {
             if ($overwrite) {
@@ -172,7 +172,7 @@ class Helper
      * @param  string|array $key
      * @return mixed
      */
-    public static function arrayUnset(&$target, $key)
+    public static function arrayUnset(mixed &$target, string|array $key): mixed
     {
         if (!is_array($target)) {
             return $target;
@@ -219,7 +219,7 @@ class Helper
      * @param  string|null  $lastSeparator
      * @return string
      */
-    public static function join(array $pieces, string $separator, string $lastSeparator = null): string
+    public static function join(array $pieces, string $separator, ?string $lastSeparator = null): string
     {
         if (is_null($lastSeparator)) {
             $lastSeparator = $separator;
@@ -245,7 +245,7 @@ class Helper
      * @param  string|null  $suffix
      * @return array
      */
-    public static function wraps(array $strings, string $prefix, string $suffix = null): array
+    public static function wraps(array $strings, string $prefix, ?string $suffix = null): array
     {
         if (is_null($suffix)) {
             $suffix = $prefix;

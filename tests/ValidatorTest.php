@@ -1,10 +1,8 @@
 <?php
-
 namespace Rakit\Validation\Tests;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;
-use Rakit\Validation\Rule;
 use Rakit\Validation\Rules\UploadedFile;
 use Rakit\Validation\Validator;
 
@@ -13,7 +11,7 @@ class ValidatorTest extends TestCase
     /** @var Validator */
     protected $validator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->validator = new Validator;
     }
@@ -21,15 +19,15 @@ class ValidatorTest extends TestCase
     public function testPasses()
     {
         $validation = $this->validator->validate([
-            'email' => 'emsifa@gmail.com'
+            'email' => 'emsifa@gmail.com',
         ], [
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
         $this->assertTrue($validation->passes());
 
         $validation = $this->validator->validate([], [
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
         $this->assertFalse($validation->passes());
@@ -38,15 +36,15 @@ class ValidatorTest extends TestCase
     public function testFails()
     {
         $validation = $this->validator->validate([
-            'email' => 'emsifa@gmail.com'
+            'email' => 'emsifa@gmail.com',
         ], [
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
         $this->assertFalse($validation->fails());
 
         $validation = $this->validator->validate([], [
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
         $this->assertTrue($validation->fails());
@@ -55,12 +53,12 @@ class ValidatorTest extends TestCase
     public function testSkipEmptyRule()
     {
         $validation = $this->validator->validate([
-            'email' => 'emsifa@gmail.com'
+            'email' => 'emsifa@gmail.com',
         ], [
             'email' => [
                 null,
-                'email'
-            ]
+                'email',
+            ],
         ]);
 
         $this->assertTrue($validation->passes());
@@ -69,17 +67,17 @@ class ValidatorTest extends TestCase
     public function testRequiredUploadedFile()
     {
         $empty_file = [
-            'name' => '',
-            'type' => '',
-            'size' => '',
+            'name'     => '',
+            'type'     => '',
+            'size'     => '',
             'tmp_name' => '',
-            'error' => UPLOAD_ERR_NO_FILE
+            'error'    => UPLOAD_ERR_NO_FILE,
         ];
 
         $validation = $this->validator->validate([
-            'file' => $empty_file
+            'file' => $empty_file,
         ], [
-            'file' => 'required|uploaded_file'
+            'file' => 'required|uploaded_file',
         ]);
 
         $errors = $validation->errors();
@@ -90,17 +88,17 @@ class ValidatorTest extends TestCase
     public function testOptionalUploadedFile()
     {
         $emptyFile = [
-            'name' => '',
-            'type' => '',
-            'size' => '',
+            'name'     => '',
+            'type'     => '',
+            'size'     => '',
             'tmp_name' => '',
-            'error' => UPLOAD_ERR_NO_FILE
+            'error'    => UPLOAD_ERR_NO_FILE,
         ];
 
         $validation = $this->validator->validate([
-            'file' => $emptyFile
+            'file' => $emptyFile,
         ], [
-            'file' => 'uploaded_file'
+            'file' => 'uploaded_file',
         ]);
         $this->assertTrue($validation->passes());
     }
@@ -111,9 +109,9 @@ class ValidatorTest extends TestCase
     public function testMissingKeyUploadedFile($uploadedFile)
     {
         $validation = $this->validator->validate([
-            'file' => $uploadedFile
+            'file' => $uploadedFile,
         ], [
-            'file' => 'required|uploaded_file'
+            'file' => 'required|uploaded_file',
         ]);
 
         $errors = $validation->errors();
@@ -121,21 +119,21 @@ class ValidatorTest extends TestCase
         $this->assertNotNull($errors->first('file:required'));
     }
 
-    public function getSamplesMissingKeyFromUploadedFileValue()
+    public static function getSamplesMissingKeyFromUploadedFileValue()
     {
         $validUploadedFile = [
-            'name' => 'foo',
-            'type' => 'text/plain',
-            'size' => 1000,
+            'name'     => 'foo',
+            'type'     => 'text/plain',
+            'size'     => 1000,
             'tmp_name' => __FILE__,
-            'error' => UPLOAD_ERR_OK
+            'error'    => UPLOAD_ERR_OK,
         ];
 
         $samples = [];
         foreach ($validUploadedFile as $key => $value) {
             $uploadedFile = $validUploadedFile;
             unset($uploadedFile[$key]);
-            $samples[] = $uploadedFile;
+            $samples[] = [$uploadedFile];
         }
         return $samples;
     }
@@ -147,57 +145,57 @@ class ValidatorTest extends TestCase
         // <input type="file" name="photos[]"/>
         $sampleInputFiles = [
             'photos' => [
-                'name' => [
+                'name'     => [
                     'a.png',
                     'b.jpeg',
                 ],
-                'type' => [
+                'type'     => [
                     'image/png',
                     'image/jpeg',
                 ],
-                'size' => [
+                'size'     => [
                     1000,
                     2000,
                 ],
                 'tmp_name' => [
-                    __DIR__.'/a.png',
-                    __DIR__.'/b.jpeg',
+                    __DIR__ . '/a.png',
+                    __DIR__ . '/b.jpeg',
                 ],
-                'error' => [
+                'error'    => [
                     UPLOAD_ERR_OK,
                     UPLOAD_ERR_OK,
-                ]
-            ]
+                ],
+            ],
         ];
 
         $uploadedFileRule = $this->getMockedUploadedFileRule()->fileTypes('jpeg');
 
         $validation = $this->validator->validate($sampleInputFiles, [
-            'photos.*' => ['required', $uploadedFileRule]
+            'photos.*' => ['required', $uploadedFileRule],
         ]);
 
         $this->assertFalse($validation->passes());
         $this->assertEquals($validation->getValidData(), [
             'photos' => [
                 1 => [
-                    'name' => 'b.jpeg',
-                    'type' => 'image/jpeg',
-                    'size' => 2000,
-                    'tmp_name' => __DIR__.'/b.jpeg',
-                    'error' => UPLOAD_ERR_OK,
-                ]
-            ]
+                    'name'     => 'b.jpeg',
+                    'type'     => 'image/jpeg',
+                    'size'     => 2000,
+                    'tmp_name' => __DIR__ . '/b.jpeg',
+                    'error'    => UPLOAD_ERR_OK,
+                ],
+            ],
         ]);
         $this->assertEquals($validation->getInvalidData(), [
             'photos' => [
                 0 => [
-                    'name' => 'a.png',
-                    'type' => 'image/png',
-                    'size' => 1000,
-                    'tmp_name' => __DIR__.'/a.png',
-                    'error' => UPLOAD_ERR_OK,
-                ]
-            ]
+                    'name'     => 'a.png',
+                    'type'     => 'image/png',
+                    'size'     => 1000,
+                    'tmp_name' => __DIR__ . '/a.png',
+                    'error'    => UPLOAD_ERR_OK,
+                ],
+            ],
         ]);
     }
 
@@ -208,27 +206,27 @@ class ValidatorTest extends TestCase
         // <input type="file" name="photos[bar]"/>
         $sampleInputFiles = [
             'photos' => [
-                'name' => [
-                   'foo' => 'a.png',
-                   'bar' => 'b.jpeg',
+                'name'     => [
+                    'foo' => 'a.png',
+                    'bar' => 'b.jpeg',
                 ],
-                'type' => [
-                   'foo' => 'image/png',
-                   'bar' => 'image/jpeg',
+                'type'     => [
+                    'foo' => 'image/png',
+                    'bar' => 'image/jpeg',
                 ],
-                'size' => [
-                   'foo' => 1000,
-                   'bar' => 2000,
+                'size'     => [
+                    'foo' => 1000,
+                    'bar' => 2000,
                 ],
                 'tmp_name' => [
-                   'foo' => __DIR__.'/a.png',
-                   'bar' => __DIR__.'/b.jpeg',
+                    'foo' => __DIR__ . '/a.png',
+                    'bar' => __DIR__ . '/b.jpeg',
                 ],
-                'error' => [
-                   'foo' => UPLOAD_ERR_OK,
-                   'bar' => UPLOAD_ERR_OK,
-                ]
-            ]
+                'error'    => [
+                    'foo' => UPLOAD_ERR_OK,
+                    'bar' => UPLOAD_ERR_OK,
+                ],
+            ],
         ];
 
         $uploadedFileRule = $this->getMockedUploadedFileRule()->fileTypes('jpeg');
@@ -242,24 +240,24 @@ class ValidatorTest extends TestCase
         $this->assertEquals($validation->getValidData(), [
             'photos' => [
                 'bar' => [
-                    'name' => 'b.jpeg',
-                    'type' => 'image/jpeg',
-                    'size' => 2000,
-                    'tmp_name' => __DIR__.'/b.jpeg',
-                    'error' => UPLOAD_ERR_OK,
-                ]
-            ]
+                    'name'     => 'b.jpeg',
+                    'type'     => 'image/jpeg',
+                    'size'     => 2000,
+                    'tmp_name' => __DIR__ . '/b.jpeg',
+                    'error'    => UPLOAD_ERR_OK,
+                ],
+            ],
         ]);
         $this->assertEquals($validation->getInvalidData(), [
             'photos' => [
                 'foo' => [
-                    'name' => 'a.png',
-                    'type' => 'image/png',
-                    'size' => 1000,
-                    'tmp_name' => __DIR__.'/a.png',
-                    'error' => UPLOAD_ERR_OK,
-                ]
-            ]
+                    'name'     => 'a.png',
+                    'type'     => 'image/png',
+                    'size'     => 1000,
+                    'tmp_name' => __DIR__ . '/a.png',
+                    'error'    => UPLOAD_ERR_OK,
+                ],
+            ],
         ]);
     }
 
@@ -272,67 +270,67 @@ class ValidatorTest extends TestCase
         // <input type="file" name="files[photos][]"/>
         $sampleInputFiles = [
             'files' => [
-                'name' => [
-                   'foo' => [
+                'name'     => [
+                    'foo'    => [
                         'bar' => [
                             'baz' => 'foo-bar-baz.jpeg',
                             'qux' => 'foo-bar-qux.png',
-                        ]
-                   ],
-                   'photos' => [
+                        ],
+                    ],
+                    'photos' => [
                         'photos-0.png',
                         'photos-1.jpeg',
-                   ]
+                    ],
                 ],
-                'type' => [
-                    'foo' => [
+                'type'     => [
+                    'foo'    => [
                         'bar' => [
                             'baz' => 'image/jpeg',
                             'qux' => 'image/png',
-                        ]
+                        ],
                     ],
                     'photos' => [
                         'image/png',
                         'image/jpeg',
-                    ]
+                    ],
                 ],
-                'size' => [
-                   'foo' => [
+                'size'     => [
+                    'foo'    => [
                         'bar' => [
                             'baz' => 500,
                             'qux' => 750,
-                        ]
+                        ],
                     ],
                     'photos' => [
                         1000,
                         2000,
-                    ]
+                    ],
                 ],
                 'tmp_name' => [
-                    'foo' => [
+                    'foo'    => [
                         'bar' => [
-                            'baz' => __DIR__.'/foo-bar-baz.jpeg',
-                            'qux' => __DIR__.'/foo-bar-qux.png',
-                        ]
+                            'baz' => __DIR__ . '/foo-bar-baz.jpeg',
+                            'qux' => __DIR__ . '/foo-bar-qux.png',
+                        ],
                     ],
                     'photos' => [
-                        __DIR__.'/photos-0.png',
-                        __DIR__.'/photos-1.jpeg',
-                    ]
+                        __DIR__ . '/photos-0.png',
+                        __DIR__ . '/photos-1.jpeg',
+                    ],
                 ],
-                'error' => [
-                   'foo' => [
+                'error'    => [
+                    'foo'    => [
                         'bar' => [
                             'baz' => UPLOAD_ERR_OK,
                             'qux' => UPLOAD_ERR_OK,
-                        ]
+                        ],
                     ],
                     'photos' => [
                         UPLOAD_ERR_OK,
                         UPLOAD_ERR_OK,
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
 
         $uploadedFileRule = $this->getMockedUploadedFileRule()->fileTypes('jpeg');
@@ -340,64 +338,64 @@ class ValidatorTest extends TestCase
         $validation = $this->validator->validate($sampleInputFiles, [
             'files.foo.bar.baz' => ['required', clone $uploadedFileRule],
             'files.foo.bar.qux' => ['required', clone $uploadedFileRule],
-            'files.photos.*' => ['required', clone $uploadedFileRule],
+            'files.photos.*'    => ['required', clone $uploadedFileRule],
         ]);
 
         $this->assertFalse($validation->passes());
         $this->assertEquals($validation->getValidData(), [
             'files' => [
-                'foo' => [
+                'foo'    => [
                     'bar' => [
                         'baz' => [
-                            'name' => 'foo-bar-baz.jpeg',
-                            'type' => 'image/jpeg',
-                            'size' => 500,
-                            'tmp_name' => __DIR__.'/foo-bar-baz.jpeg',
-                            'error' => UPLOAD_ERR_OK,
-                        ]
-                    ]
+                            'name'     => 'foo-bar-baz.jpeg',
+                            'type'     => 'image/jpeg',
+                            'size'     => 500,
+                            'tmp_name' => __DIR__ . '/foo-bar-baz.jpeg',
+                            'error'    => UPLOAD_ERR_OK,
+                        ],
+                    ],
                 ],
                 'photos' => [
                     1 => [
-                        'name' => 'photos-1.jpeg',
-                        'type' => 'image/jpeg',
-                        'size' => 2000,
-                        'tmp_name' => __DIR__.'/photos-1.jpeg',
-                        'error' => UPLOAD_ERR_OK,
-                    ]
-                ]
-            ]
+                        'name'     => 'photos-1.jpeg',
+                        'type'     => 'image/jpeg',
+                        'size'     => 2000,
+                        'tmp_name' => __DIR__ . '/photos-1.jpeg',
+                        'error'    => UPLOAD_ERR_OK,
+                    ],
+                ],
+            ],
         ]);
         $this->assertEquals($validation->getInvalidData(), [
             'files' => [
-                'foo' => [
+                'foo'    => [
                     'bar' => [
                         'qux' => [
-                            'name' => 'foo-bar-qux.png',
-                            'type' => 'image/png',
-                            'size' => 750,
-                            'tmp_name' => __DIR__.'/foo-bar-qux.png',
-                            'error' => UPLOAD_ERR_OK,
-                        ]
-                    ]
+                            'name'     => 'foo-bar-qux.png',
+                            'type'     => 'image/png',
+                            'size'     => 750,
+                            'tmp_name' => __DIR__ . '/foo-bar-qux.png',
+                            'error'    => UPLOAD_ERR_OK,
+                        ],
+                    ],
                 ],
                 'photos' => [
                     0 => [
-                        'name' => 'photos-0.png',
-                        'type' => 'image/png',
-                        'size' => 1000,
-                        'tmp_name' => __DIR__.'/photos-0.png',
-                        'error' => UPLOAD_ERR_OK,
+                        'name'     => 'photos-0.png',
+                        'type'     => 'image/png',
+                        'size'     => 1000,
+                        'tmp_name' => __DIR__ . '/photos-0.png',
+                        'error'    => UPLOAD_ERR_OK,
                     ],
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
     public function getMockedUploadedFileRule()
     {
         $rule = $this->getMockBuilder(UploadedFile::class)
-            ->setMethods(['isUploadedFile'])
+            ->onlyMethods(['isUploadedFile'])
             ->getMock();
 
         $rule->method('isUploadedFile')->willReturn(true);
@@ -411,7 +409,7 @@ class ValidatorTest extends TestCase
             'a' => '',
             'b' => '',
         ], [
-            'b' => 'required_if:a,1'
+            'b' => 'required_if:a,1',
         ]);
 
         $this->assertTrue($v1->passes());
@@ -420,7 +418,7 @@ class ValidatorTest extends TestCase
             'a' => '1',
             'b' => '',
         ], [
-            'b' => 'required_if:a,1'
+            'b' => 'required_if:a,1',
         ]);
 
         $this->assertFalse($v2->passes());
@@ -432,7 +430,7 @@ class ValidatorTest extends TestCase
             'a' => '',
             'b' => '',
         ], [
-            'b' => 'required_unless:a,1'
+            'b' => 'required_unless:a,1',
         ]);
 
         $this->assertFalse($v1->passes());
@@ -441,7 +439,7 @@ class ValidatorTest extends TestCase
             'a' => '1',
             'b' => '',
         ], [
-            'b' => 'required_unless:a,1'
+            'b' => 'required_unless:a,1',
         ]);
 
         $this->assertTrue($v2->passes());
@@ -452,7 +450,7 @@ class ValidatorTest extends TestCase
         $v1 = $this->validator->validate([
             'b' => '',
         ], [
-            'b' => 'required_with:a'
+            'b' => 'required_with:a',
         ]);
 
         $this->assertTrue($v1->passes());
@@ -461,7 +459,7 @@ class ValidatorTest extends TestCase
             'a' => '1',
             'b' => '',
         ], [
-            'b' => 'required_with:a'
+            'b' => 'required_with:a',
         ]);
 
         $this->assertFalse($v2->passes());
@@ -472,7 +470,7 @@ class ValidatorTest extends TestCase
         $v1 = $this->validator->validate([
             'b' => '',
         ], [
-            'b' => 'required_without:a'
+            'b' => 'required_without:a',
         ]);
 
         $this->assertFalse($v1->passes());
@@ -481,7 +479,7 @@ class ValidatorTest extends TestCase
             'a' => '1',
             'b' => '',
         ], [
-            'b' => 'required_without:a'
+            'b' => 'required_without:a',
         ]);
 
         $this->assertTrue($v2->passes());
@@ -491,9 +489,9 @@ class ValidatorTest extends TestCase
     {
         $v1 = $this->validator->validate([
             'b' => '',
-            'a' => '1'
+            'a' => '1',
         ], [
-            'b' => 'required_with_all:a,c'
+            'b' => 'required_with_all:a,c',
         ]);
 
         $this->assertTrue($v1->passes());
@@ -501,9 +499,9 @@ class ValidatorTest extends TestCase
         $v2 = $this->validator->validate([
             'a' => '1',
             'b' => '',
-            'c' => '2'
+            'c' => '2',
         ], [
-            'b' => 'required_with_all:a,c'
+            'b' => 'required_with_all:a,c',
         ]);
 
         $this->assertFalse($v2->passes());
@@ -513,9 +511,9 @@ class ValidatorTest extends TestCase
     {
         $v1 = $this->validator->validate([
             'b' => '',
-            'a' => '1'
+            'a' => '1',
         ], [
-            'b' => 'required_without_all:a,c'
+            'b' => 'required_without_all:a,c',
         ]);
 
         $this->assertTrue($v1->passes());
@@ -523,7 +521,7 @@ class ValidatorTest extends TestCase
         $v2 = $this->validator->validate([
             'b' => '',
         ], [
-            'b' => 'required_without_all:a,c'
+            'b' => 'required_without_all:a,c',
         ]);
 
         $this->assertFalse($v2->passes());
@@ -533,30 +531,28 @@ class ValidatorTest extends TestCase
     {
         $v1 = $this->validator->validate([
         ], [
-            'something' => 'present'
+            'something' => 'present',
         ]);
         $this->assertFalse($v1->passes());
 
         $v2 = $this->validator->validate([
-            'something' => 10
+            'something' => 10,
         ], [
-            'something' => 'present'
+            'something' => 'present',
         ]);
         $this->assertTrue($v2->passes());
     }
 
-    /**
-     * @expectedException \Rakit\Validation\RuleNotFoundException
-     */
     public function testNonExistentValidationRule()
     {
+        $this->expectException(\Rakit\Validation\RuleNotFoundException::class);
         $validation = $this->validator->make([
-            'name' => "some name"
+            'name' => "some name",
         ], [
-            'name' => 'required|xxx'
+            'name' => 'required|xxx',
         ], [
             'name.required' => "Fill in your name",
-            'xxx' => "Oops"
+            'xxx'           => "Oops",
         ]);
 
         $validation->validate();
@@ -567,7 +563,7 @@ class ValidatorTest extends TestCase
         $data = ["date" => (new DateTime())->format('Y-m-d')];
 
         $validator = $this->validator->make($data, [
-            'date' => 'required|before:tomorrow'
+            'date' => 'required|before:tomorrow',
         ], []);
 
         $validator->validate();
@@ -575,7 +571,7 @@ class ValidatorTest extends TestCase
         $this->assertTrue($validator->passes());
 
         $validator2 = $this->validator->make($data, [
-            'date' => "required|before:last week"
+            'date' => "required|before:last week",
         ], []);
 
         $validator2->validate();
@@ -588,7 +584,7 @@ class ValidatorTest extends TestCase
         $data = ["date" => (new DateTime())->format('Y-m-d')];
 
         $validator = $this->validator->make($data, [
-            'date' => 'required|after:yesterday'
+            'date' => 'required|after:yesterday',
         ], []);
 
         $validator->validate();
@@ -596,7 +592,7 @@ class ValidatorTest extends TestCase
         $this->assertTrue($validator->passes());
 
         $validator2 = $this->validator->make($data, [
-            'date' => "required|after:next year"
+            'date' => "required|after:next year",
         ], []);
 
         $validator2->validate();
@@ -609,7 +605,7 @@ class ValidatorTest extends TestCase
 
         $this->validator->addValidator('even', new Even());
 
-        $data = [4, 6, 8, 10 ];
+        $data = [4, 6, 8, 10];
 
         $validation = $this->validator->make($data, ['s' => 'even'], []);
 
@@ -618,11 +614,9 @@ class ValidatorTest extends TestCase
         $this->assertTrue($validation->passes());
     }
 
-    /**
-     * @expectedException \Rakit\Validation\RuleQuashException
-     */
     public function testInternalValidationRuleCannotBeOverridden()
     {
+        $this->expectException(\Rakit\Validation\RuleQuashException::class);
 
         $this->validator->addValidator('required', new Required());
 
@@ -652,12 +646,12 @@ class ValidatorTest extends TestCase
     public function testIgnoreNextRulesWhenImplicitRulesFails()
     {
         $validation = $this->validator->validate([
-            'some_value' => 1
+            'some_value' => 1,
         ], [
-            'required_field' => 'required|numeric|min:6',
-            'required_if_field' => 'required_if:some_value,1|numeric|min:6',
-            'must_present_field' => 'present|numeric|min:6',
-            'must_accepted_field' => 'accepted|numeric|min:6'
+            'required_field'      => 'required|numeric|min:6',
+            'required_if_field'   => 'required_if:some_value,1|numeric|min:6',
+            'must_present_field'  => 'present|numeric|min:6',
+            'must_accepted_field' => 'accepted|numeric|min:6',
         ]);
 
         $errors = $validation->errors();
@@ -700,18 +694,18 @@ class ValidatorTest extends TestCase
     public function testIgnoreOtherRulesWhenAttributeIsNotRequired()
     {
         $validation = $this->validator->validate([
-            'an_empty_file' => [
-                'name' => '',
-                'type' => '',
-                'size' => '',
+            'an_empty_file'     => [
+                'name'     => '',
+                'type'     => '',
+                'size'     => '',
                 'tmp_name' => '',
-                'error' => UPLOAD_ERR_NO_FILE,
+                'error'    => UPLOAD_ERR_NO_FILE,
             ],
             'required_if_field' => null,
         ], [
-            'optional_field' => 'ipv4|in:127.0.0.1',
+            'optional_field'    => 'ipv4|in:127.0.0.1',
             'required_if_field' => 'required_if:some_value,1|email',
-            'an_empty_file' => 'uploaded_file'
+            'an_empty_file'     => 'uploaded_file',
         ]);
 
         $this->assertTrue($validation->passes());
@@ -720,19 +714,19 @@ class ValidatorTest extends TestCase
     public function testDontIgnoreOtherRulesWhenValueIsNotEmpty()
     {
         $validation = $this->validator->validate([
-            'an_error_file' => [
-                'name' => 'foo',
-                'type' => 'text/plain',
-                'size' => 10000,
+            'an_error_file'     => [
+                'name'     => 'foo',
+                'type'     => 'text/plain',
+                'size'     => 10000,
                 'tmp_name' => '/tmp/foo',
-                'error' => UPLOAD_ERR_CANT_WRITE
+                'error'    => UPLOAD_ERR_CANT_WRITE,
             ],
-            'optional_field' => 'invalid ip address',
+            'optional_field'    => 'invalid ip address',
             'required_if_field' => 'invalid email',
         ], [
-            'an_error_file' => 'uploaded_file',
-            'optional_field' => 'ipv4|in:127.0.0.1',
-            'required_if_field' => 'required_if:some_value,1|email'
+            'an_error_file'     => 'uploaded_file',
+            'optional_field'    => 'ipv4|in:127.0.0.1',
+            'required_if_field' => 'required_if:some_value,1|email',
         ]);
 
         $this->assertEquals($validation->errors()->count(), 4);
@@ -741,12 +735,12 @@ class ValidatorTest extends TestCase
     public function testDontIgnoreOtherRulesWhenAttributeIsRequired()
     {
         $validation = $this->validator->validate([
-            'optional_field' => 'have a value',
+            'optional_field'    => 'have a value',
             'required_if_field' => 'invalid email',
-            'some_value' => 1
+            'some_value'        => 1,
         ], [
-            'optional_field' => 'required|ipv4|in:127.0.0.1',
-            'required_if_field' => 'required_if:some_value,1|email'
+            'optional_field'    => 'required|ipv4|in:127.0.0.1',
+            'required_if_field' => 'required_if:some_value,1|email',
         ]);
 
         $errors = $validation->errors();
@@ -759,21 +753,21 @@ class ValidatorTest extends TestCase
 
     public function testRegisterRulesUsingInvokes()
     {
-        $validator = $this->validator;
+        $validator  = $this->validator;
         $validation = $this->validator->validate([
-            'a_field' => null,
-            'a_number' => 1000,
+            'a_field'       => null,
+            'a_number'      => 1000,
             'a_same_number' => 1000,
-            'a_date' => '2016-12-06',
-            'a_file' => [
-                'name' => 'foo',
-                'type' => 'text/plain',
-                'size' => 10000,
+            'a_date'        => '2016-12-06',
+            'a_file'        => [
+                'name'     => 'foo',
+                'type'     => 'text/plain',
+                'size'     => 10000,
                 'tmp_name' => '/tmp/foo',
-                'error' => UPLOAD_ERR_OK
-            ]
+                'error'    => UPLOAD_ERR_OK,
+            ],
         ], [
-            'a_field' => [
+            'a_field'  => [
                 $validator('required')->message('1'),
             ],
             'a_number' => [
@@ -785,12 +779,12 @@ class ValidatorTest extends TestCase
                 $validator('same', 'a_date')->message('7'),
                 $validator('different', 'a_same_number')->message('8'),
             ],
-            'a_date' => [
-                $validator('date', 'd-m-Y')->message('9')
+            'a_date'   => [
+                $validator('date', 'd-m-Y')->message('9'),
             ],
-            'a_file' => [
-                $validator('uploaded_file', 20000)->message('10')
-            ]
+            'a_file'   => [
+                $validator('uploaded_file', 20000)->message('10'),
+            ],
         ]);
 
         $errors = $validation->errors();
@@ -802,13 +796,13 @@ class ValidatorTest extends TestCase
         $validation = $this->validator->validate([
             'user' => [
                 'email' => 'invalid email',
-                'name' => 'John Doe',
-                'age' => 16
-            ]
+                'name'  => 'John Doe',
+                'age'   => 16,
+            ],
         ], [
             'user.email' => 'required|email',
-            'user.name' => 'required',
-            'user.age' => 'required|min:18'
+            'user.name'  => 'required',
+            'user.age'   => 'required|min:18',
         ]);
 
         $errors = $validation->errors();
@@ -823,7 +817,7 @@ class ValidatorTest extends TestCase
     public function testEmptyArrayAssocValidation()
     {
         $validation = $this->validator->validate([], [
-            'user'=> 'required',
+            'user'       => 'required',
             'user.email' => 'email',
         ]);
 
@@ -840,10 +834,10 @@ class ValidatorTest extends TestCase
         $validation = $this->validator->validate($data, $rules);
         $this->assertSame(empty($errors), $validation->passes());
         $errorBag = $validation->errors();
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             foreach ($errors as $error) {
                 $field = $error[0];
-                $rule = $error[1] ?? null;
+                $rule  = $error[1] ?? null;
                 $error = $errorBag->get($field);
                 $this->assertNotEmpty($error);
                 if ($rule !== null) {
@@ -853,7 +847,7 @@ class ValidatorTest extends TestCase
         }
     }
 
-    public function rootAsteriskProvider(): array
+    public static function rootAsteriskProvider(): array
     {
         return [
             'control sample success' => [
@@ -865,29 +859,29 @@ class ValidatorTest extends TestCase
                 ['Body.*' => 'integer|min:0'],
                 [['Body.b', 'min']],
             ],
-            'root field success' => [
+            'root field success'     => [
                 ['a' => 1, 'b' => 2],
                 ['*' => 'integer|min:0'],
             ],
-            'root field failure' => [
+            'root field failure'     => [
                 ['a' => 1, 'b' => -2],
                 ['*' => 'integer|min:0'],
                 [['b', 'min']],
             ],
-            'root array success' => [
+            'root array success'     => [
                 [[1], [2]],
                 ['*.*' => 'integer|min:0'],
             ],
-            'root array failure' => [
+            'root array failure'     => [
                 [[1], [-2]],
                 ['*.*' => 'integer|min:0'],
                 [['1.0', 'min']],
             ],
-            'root dict success' => [
+            'root dict success'      => [
                 ['a' => ['c' => 1, 'd' => 4], 'b' => ['c' => 'e', 'd' => 8]],
                 ['*.c' => 'required'],
             ],
-            'root dict failure' => [
+            'root dict failure'      => [
                 ['a' => ['c' => 1, 'd' => 4], 'b' => ['d' => 8]],
                 ['*.c' => 'required'],
                 [['b.c', 'required']],
@@ -904,10 +898,10 @@ class ValidatorTest extends TestCase
                 ['id_product' => 3, 'qty' => null],
                 ['id_product' => 4, 'qty' => 'foo'],
                 ['id_product' => 'foo', 'qty' => 10],
-            ]
+            ],
         ], [
             'cart_items.*.id_product' => 'required|numeric',
-            'cart_items.*.qty' => 'required|numeric'
+            'cart_items.*.qty'        => 'required|numeric',
         ]);
 
         $errors = $validation->errors();
@@ -923,26 +917,26 @@ class ValidatorTest extends TestCase
     public function testSetCustomMessagesInValidator()
     {
         $this->validator->setMessages([
-            'required' => 'foo',
-            'email' => 'bar',
-            'comments.*.text' => 'baz'
+            'required'        => 'foo',
+            'email'           => 'bar',
+            'comments.*.text' => 'baz',
         ]);
 
         $this->validator->setMessage('numeric', 'baz');
 
         $validation = $this->validator->validate([
-            'foo' => null,
-            'email' => 'invalid email',
+            'foo'       => null,
+            'email'     => 'invalid email',
             'something' => 'not numeric',
-            'comments' => [
+            'comments'  => [
                 ['id' => 4, 'text' => ''],
                 ['id' => 5, 'text' => 'foo'],
-            ]
+            ],
         ], [
-            'foo' => 'required',
-            'email' => 'email',
-            'something' => 'numeric',
-            'comments.*.text' => 'required'
+            'foo'             => 'required',
+            'email'           => 'email',
+            'something'       => 'numeric',
+            'comments.*.text' => 'required',
         ]);
 
         $errors = $validation->errors();
@@ -955,24 +949,24 @@ class ValidatorTest extends TestCase
     public function testSetCustomMessagesInValidation()
     {
         $validation = $this->validator->make([
-            'foo' => null,
-            'email' => 'invalid email',
+            'foo'       => null,
+            'email'     => 'invalid email',
             'something' => 'not numeric',
-            'comments' => [
+            'comments'  => [
                 ['id' => 4, 'text' => ''],
                 ['id' => 5, 'text' => 'foo'],
-            ]
+            ],
         ], [
-            'foo' => 'required',
-            'email' => 'email',
-            'something' => 'numeric',
-            'comments.*.text' => 'required'
+            'foo'             => 'required',
+            'email'           => 'email',
+            'something'       => 'numeric',
+            'comments.*.text' => 'required',
         ]);
 
         $validation->setMessages([
-            'required' => 'foo',
-            'email' => 'bar',
-            'comments.*.text' => 'baz'
+            'required'        => 'foo',
+            'email'           => 'bar',
+            'comments.*.text' => 'baz',
         ]);
 
         $validation->setMessage('numeric', 'baz');
@@ -989,7 +983,7 @@ class ValidatorTest extends TestCase
     public function testCustomMessageInCallbackRule()
     {
         $evenNumberValidator = function ($value) {
-            if (!is_numeric($value) or $value % 2 !== 0) {
+            if (! is_numeric($value) or $value % 2 !== 0) {
                 return ":attribute must be even number";
             }
             return true;
@@ -1016,9 +1010,9 @@ class ValidatorTest extends TestCase
         ]);
 
         $validation->setMessages([
-            'something:email' => 'foo',
+            'something:email'   => 'foo',
             'something:numeric' => 'bar',
-            'something:max' => 'baz',
+            'something:max'     => 'baz',
         ]);
 
         $validation->validate();
@@ -1032,30 +1026,30 @@ class ValidatorTest extends TestCase
     public function testSetAttributeAliases()
     {
         $validation = $this->validator->make([
-            'foo' => null,
-            'email' => 'invalid email',
+            'foo'       => null,
+            'email'     => 'invalid email',
             'something' => 'not numeric',
-            'comments' => [
+            'comments'  => [
                 ['id' => 4, 'text' => ''],
                 ['id' => 5, 'text' => 'foo'],
-            ]
+            ],
         ], [
-            'foo' => 'required',
-            'email' => 'email',
-            'something' => 'numeric',
-            'comments.*.text' => 'required'
+            'foo'             => 'required',
+            'email'           => 'email',
+            'something'       => 'numeric',
+            'comments.*.text' => 'required',
         ]);
 
         $validation->setMessages([
-            'required' => ':attribute foo',
-            'email' => ':attribute bar',
-            'numeric' => ':attribute baz',
-            'comments.*.text' => ':attribute qux'
+            'required'        => ':attribute foo',
+            'email'           => ':attribute bar',
+            'numeric'         => ':attribute baz',
+            'comments.*.text' => ':attribute qux',
         ]);
 
         $validation->setAliases([
-            'foo' => 'Foo',
-            'email' => 'Bar'
+            'foo'   => 'Foo',
+            'email' => 'Bar',
         ]);
 
         $validation->setAlias('something', 'Baz');
@@ -1073,12 +1067,12 @@ class ValidatorTest extends TestCase
     public function testUsingDefaults()
     {
         $validation = $this->validator->validate([
-            'is_active' => null,
-            'is_published' => 'invalid-value'
+            'is_active'    => null,
+            'is_published' => 'invalid-value',
         ], [
-            'is_active' => 'defaults:0|required|in:0,1',
-            'is_enabled' => 'defaults:1|required|in:0,1',
-            'is_published' => 'required|in:0,1'
+            'is_active'    => 'defaults:0|required|in:0,1',
+            'is_enabled'   => 'defaults:1|required|in:0,1',
+            'is_published' => 'required|in:0,1',
         ]);
 
         $this->assertFalse($validation->passes());
@@ -1091,16 +1085,16 @@ class ValidatorTest extends TestCase
         // Getting (all) validated data
         $validatedData = $validation->getValidatedData();
         $this->assertEquals($validatedData, [
-            'is_active' => '0',
-            'is_enabled' => '1',
-            'is_published' => 'invalid-value'
+            'is_active'    => '0',
+            'is_enabled'   => '1',
+            'is_published' => 'invalid-value',
         ]);
 
         // Getting only valid data
         $validData = $validation->getValidData();
         $this->assertEquals($validData, [
-            'is_active' => '0',
-            'is_enabled' => '1'
+            'is_active'  => '0',
+            'is_enabled' => '1',
         ]);
 
         // Getting only invalid data
@@ -1117,10 +1111,10 @@ class ValidatorTest extends TestCase
                 [
                     'qty' => 'xyz',
                 ],
-            ]
+            ],
         ], [
             'cart.*.itemName' => 'required',
-            'cart.*.qty' => 'required|numeric'
+            'cart.*.qty'      => 'required|numeric',
         ]);
 
         $errors = $validation->errors();
@@ -1134,28 +1128,28 @@ class ValidatorTest extends TestCase
         $validation = $this->validator->make([
             'cart' => [
                 [
-                    'qty' => 'xyz',
-                    'itemName' => 'Lorem ipsum'
+                    'qty'      => 'xyz',
+                    'itemName' => 'Lorem ipsum',
                 ],
                 [
-                    'qty' => 10,
+                    'qty'        => 10,
                     'attributes' => [
                         [
-                            'name' => 'color',
-                            'value' => null
-                        ]
-                    ]
+                            'name'  => 'color',
+                            'value' => null,
+                        ],
+                    ],
                 ],
-            ]
+            ],
         ], [
-            'cart.*.itemName' => 'required',
-            'cart.*.qty' => 'required|numeric',
-            'cart.*.attributes.*.value' => 'required'
+            'cart.*.itemName'           => 'required',
+            'cart.*.qty'                => 'required|numeric',
+            'cart.*.attributes.*.value' => 'required',
         ]);
 
         $validation->setMessages([
-            'cart.*.itemName:required' => 'Item [0] name is required',
-            'cart.*.qty:numeric' => 'Item {0} qty is not a number',
+            'cart.*.itemName:required'  => 'Item [0] name is required',
+            'cart.*.qty:numeric'        => 'Item {0} qty is not a number',
             'cart.*.attributes.*.value' => 'Item {0} attribute {1} value is required',
         ]);
 
@@ -1174,22 +1168,22 @@ class ValidatorTest extends TestCase
             'products' => [
                 // invalid because has_notes is not empty
                 '10' => [
-                    'quantity' => 8,
+                    'quantity'  => 8,
                     'has_notes' => 1,
-                    'notes' => ''
+                    'notes'     => '',
                 ],
                 // valid because has_notes is null
                 '12' => [
-                    'quantity' => 0,
+                    'quantity'  => 0,
                     'has_notes' => null,
-                    'notes' => ''
+                    'notes'     => '',
                 ],
                 // valid because no has_notes
                 '14' => [
                     'quantity' => 0,
-                    'notes' => ''
+                    'notes'    => '',
                 ],
-            ]
+            ],
         ], [
             'products.*.notes' => 'required_if:products.*.has_notes,1',
         ]);
@@ -1208,22 +1202,22 @@ class ValidatorTest extends TestCase
             'products' => [
                 // valid because has_notes is 1
                 '10' => [
-                    'quantity' => 8,
+                    'quantity'  => 8,
                     'has_notes' => 1,
-                    'notes' => ''
+                    'notes'     => '',
                 ],
                 // invalid because has_notes is not 1
                 '12' => [
-                    'quantity' => 0,
+                    'quantity'  => 0,
                     'has_notes' => null,
-                    'notes' => ''
+                    'notes'     => '',
                 ],
                 // invalid because no has_notes
                 '14' => [
                     'quantity' => 0,
-                    'notes' => ''
+                    'notes'    => '',
                 ],
-            ]
+            ],
         ], [
             'products.*.notes' => 'required_unless:products.*.has_notes,1',
         ]);
@@ -1241,14 +1235,14 @@ class ValidatorTest extends TestCase
         $validation = $this->validator->validate([
             'users' => [
                 [
-                    'password' => 'foo',
-                    'password_confirmation' => 'foo'
+                    'password'              => 'foo',
+                    'password_confirmation' => 'foo',
                 ],
                 [
-                    'password' => 'foo',
-                    'password_confirmation' => 'bar'
+                    'password'              => 'foo',
+                    'password_confirmation' => 'bar',
                 ],
-            ]
+            ],
         ], [
             'users.*.password_confirmation' => 'required|same:users.*.password',
         ]);
@@ -1263,53 +1257,53 @@ class ValidatorTest extends TestCase
     public function testGetValidData()
     {
         $validation = $this->validator->validate([
-            'items' => [
+            'items'  => [
                 [
                     'product_id' => 1,
-                    'qty' => 'invalid'
-                ]
+                    'qty'        => 'invalid',
+                ],
             ],
             'emails' => [
                 'foo@bar.com',
                 'something',
-                'foo@blah.com'
+                'foo@blah.com',
             ],
             'stuffs' => [
-                'one' => '1',
-                'two' => '2',
+                'one'   => '1',
+                'two'   => '2',
                 'three' => 'three',
             ],
-            'thing' => 'exists',
+            'thing'  => 'exists',
         ], [
-            'thing' => 'required',
+            'thing'              => 'required',
             'items.*.product_id' => 'required|numeric',
-            'emails.*' => 'required|email',
-            'items.*.qty' => 'required|numeric',
-            'something' => 'default:on|required|in:on,off',
-            'stuffs' => 'required|array',
-            'stuffs.one' => 'required|numeric',
-            'stuffs.two' => 'required|numeric',
-            'stuffs.three' => 'required|numeric',
+            'emails.*'           => 'required|email',
+            'items.*.qty'        => 'required|numeric',
+            'something'          => 'default:on|required|in:on,off',
+            'stuffs'             => 'required|array',
+            'stuffs.one'         => 'required|numeric',
+            'stuffs.two'         => 'required|numeric',
+            'stuffs.three'       => 'required|numeric',
         ]);
 
         $validData = $validation->getValidData();
 
         $this->assertEquals([
-            'items' => [
+            'items'     => [
                 [
-                    'product_id' => 1
-                ]
+                    'product_id' => 1,
+                ],
             ],
-            'emails' => [
+            'emails'    => [
                 0 => 'foo@bar.com',
-                2 => 'foo@blah.com'
+                2 => 'foo@blah.com',
             ],
-            'thing' => 'exists',
+            'thing'     => 'exists',
             'something' => 'on',
-            'stuffs' => [
+            'stuffs'    => [
                 'one' => '1',
                 'two' => '2',
-            ]
+            ],
         ], $validData);
 
         $stuffs = $validData['stuffs'];
@@ -1319,50 +1313,50 @@ class ValidatorTest extends TestCase
     public function testGetInvalidData()
     {
         $validation = $this->validator->validate([
-            'items' => [
+            'items'  => [
                 [
                     'product_id' => 1,
-                    'qty' => 'invalid'
-                ]
+                    'qty'        => 'invalid',
+                ],
             ],
             'emails' => [
                 'foo@bar.com',
                 'something',
-                'foo@blah.com'
+                'foo@blah.com',
             ],
             'stuffs' => [
-                'one' => '1',
-                'two' => '2',
+                'one'   => '1',
+                'two'   => '2',
                 'three' => 'three',
             ],
-            'thing' => 'exists',
+            'thing'  => 'exists',
         ], [
-            'thing' => 'required',
+            'thing'              => 'required',
             'items.*.product_id' => 'required|numeric',
-            'emails.*' => 'required|email',
-            'items.*.qty' => 'required|numeric',
-            'something' => 'required|in:on,off',
-            'stuffs' => 'required|array',
-            'stuffs.one' => 'numeric',
-            'stuffs.two' => 'numeric',
-            'stuffs.three' => 'numeric',
+            'emails.*'           => 'required|email',
+            'items.*.qty'        => 'required|numeric',
+            'something'          => 'required|in:on,off',
+            'stuffs'             => 'required|array',
+            'stuffs.one'         => 'numeric',
+            'stuffs.two'         => 'numeric',
+            'stuffs.three'       => 'numeric',
         ]);
 
         $invalidData = $validation->getInvalidData();
 
         $this->assertEquals([
-            'items' => [
+            'items'     => [
                 [
-                    'qty' => 'invalid'
-                ]
+                    'qty' => 'invalid',
+                ],
             ],
-            'emails' => [
-                1 => 'something'
+            'emails'    => [
+                1 => 'something',
             ],
             'something' => null,
-            'stuffs' => [
+            'stuffs'    => [
                 'three' => 'three',
-            ]
+            ],
         ], $invalidData);
 
         $stuffs = $invalidData['stuffs'];
@@ -1373,7 +1367,7 @@ class ValidatorTest extends TestCase
     public function testRuleInInvalidMessages()
     {
         $validation = $this->validator->validate([
-            'number' => 1
+            'number' => 1,
         ], [
             'number' => 'in:7,8,9',
         ]);
@@ -1384,7 +1378,7 @@ class ValidatorTest extends TestCase
         $this->validator->setTranslation('or', 'atau');
 
         $validation = $this->validator->validate([
-            'number' => 1
+            'number' => 1,
         ], [
             'number' => 'in:7,8,9',
         ]);
@@ -1395,7 +1389,7 @@ class ValidatorTest extends TestCase
     public function testRuleNotInInvalidMessages()
     {
         $validation = $this->validator->validate([
-            'number' => 1
+            'number' => 1,
         ], [
             'number' => 'not_in:1,2,3',
         ]);
@@ -1406,7 +1400,7 @@ class ValidatorTest extends TestCase
         $this->validator->setTranslation('and', 'dan');
 
         $validation = $this->validator->validate([
-            'number' => 1
+            'number' => 1,
         ], [
             'number' => 'not_in:1,2,3',
         ]);
@@ -1417,11 +1411,11 @@ class ValidatorTest extends TestCase
     public function testRuleMimesInvalidMessages()
     {
         $file = [
-            'name' => 'sample.txt',
-            'type' => 'plain/text',
+            'name'     => 'sample.txt',
+            'type'     => 'plain/text',
             'tmp_name' => __FILE__,
-            'size' => 1000,
-            'error' => UPLOAD_ERR_OK,
+            'size'     => 1000,
+            'error'    => UPLOAD_ERR_OK,
         ];
 
         $validation = $this->validator->validate([
@@ -1449,11 +1443,11 @@ class ValidatorTest extends TestCase
     public function testRuleUploadedFileInvalidMessages()
     {
         $file = [
-            'name' => 'sample.txt',
-            'type' => 'plain/text',
+            'name'     => 'sample.txt',
+            'type'     => 'plain/text',
             'tmp_name' => __FILE__,
-            'size' => 1024 * 1024 * 2, // 2M
-            'error' => UPLOAD_ERR_OK,
+            'size'     => 1024 * 1024 * 2, // 2M
+            'error'    => UPLOAD_ERR_OK,
         ];
 
         $rule = $this->getMockedUploadedFileRule();
@@ -1513,34 +1507,34 @@ class ValidatorTest extends TestCase
     public function testIgnoreNextRulesWithNullableRule()
     {
         $emptyFile = [
-            'name' => '',
-            'type' => '',
-            'size' => '',
+            'name'     => '',
+            'type'     => '',
+            'size'     => '',
             'tmp_name' => '',
-            'error' => UPLOAD_ERR_NO_FILE
+            'error'    => UPLOAD_ERR_NO_FILE,
         ];
 
         $invalidFile = [
-            'name' => 'sample.txt',
-            'type' => 'plain/text',
+            'name'     => 'sample.txt',
+            'type'     => 'plain/text',
             'tmp_name' => __FILE__,
-            'size' => 1000,
-            'error' => UPLOAD_ERR_OK,
+            'size'     => 1000,
+            'error'    => UPLOAD_ERR_OK,
         ];
 
         $data1 = [
             'file' => $emptyFile,
-            'name' => ''
+            'name' => '',
         ];
 
         $data2 = [
             'file' => $invalidFile,
-            'name' => 'a@b.c'
+            'name' => 'a@b.c',
         ];
 
         $rules = [
             'file' => 'nullable|uploaded_file:0,500K,png,jpeg',
-            'name' => 'nullable|email'
+            'name' => 'nullable|email',
         ];
 
         $validation1 = $this->validator->validate($data1, $rules);
@@ -1553,7 +1547,7 @@ class ValidatorTest extends TestCase
     public function testNumericStringSizeWithoutNumericRule()
     {
         $validation = $this->validator->validate([
-            'number' => '1.2345'
+            'number' => '1.2345',
         ], [
             'number' => 'max:2',
         ]);
@@ -1564,7 +1558,7 @@ class ValidatorTest extends TestCase
     public function testNumericStringSizeWithNumericRule()
     {
         $validation = $this->validator->validate([
-            'number' => '1.2345'
+            'number' => '1.2345',
         ], [
             'number' => 'numeric|max:2',
         ]);

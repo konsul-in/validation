@@ -1,33 +1,24 @@
 <?php
-
 namespace Rakit\Validation;
 
 class Attribute
 {
 
-    /** @var array */
-    protected $rules = [];
+    protected array $rules = [];
 
-    /** @var string */
-    protected $key;
+    protected string $key;
 
-    /** @var string|null */
-    protected $alias;
+    protected ?string $alias;
 
-    /** @var \Rakit\Validation\Validation */
-    protected $validation;
+    protected Validation $validation;
 
-    /** @var bool */
-    protected $required = false;
+    protected bool $required = false;
 
-    /** @var \Rakit\Validation\Validation|null */
-    protected $primaryAttribute = null;
+    protected ?Attribute $primaryAttribute = null;
 
-    /** @var array */
-    protected $otherAttributes = [];
+    protected array $otherAttributes = [];
 
-    /** @var array */
-    protected $keyIndexes = [];
+    protected array $keyIndexes = [];
 
     /**
      * Constructor
@@ -45,8 +36,8 @@ class Attribute
         array $rules = []
     ) {
         $this->validation = $validation;
-        $this->alias = $alias;
-        $this->key = $key;
+        $this->alias      = $alias;
+        $this->key        = $key;
         foreach ($rules as $rule) {
             $this->addRule($rule);
         }
@@ -140,7 +131,7 @@ class Attribute
      */
     public function getRule(string $ruleKey)
     {
-        return $this->hasRule($ruleKey)? $this->rules[$ruleKey] : null;
+        return $this->hasRule($ruleKey) ? $this->rules[$ruleKey] : null;
     }
 
     /**
@@ -211,13 +202,13 @@ class Attribute
      * @param string|null $key
      * @return mixed
      */
-    public function getValue(string $key = null)
+    public function getValue(?string $key = null): mixed
     {
         if ($key && $this->isArrayAttribute()) {
             $key = $this->resolveSiblingKey($key);
         }
 
-        if (!$key) {
+        if (! $key) {
             $key = $this->getKey();
         }
 
@@ -241,7 +232,7 @@ class Attribute
      */
     public function isUsingDotNotation(): bool
     {
-        return strpos($this->getKey(), '.') !== false;
+        return str_contains($this->getKey(), '.');
     }
 
     /**
@@ -252,8 +243,8 @@ class Attribute
      */
     public function resolveSiblingKey(string $key): string
     {
-        $indexes = $this->getKeyIndexes();
-        $keys = explode("*", $key);
+        $indexes        = $this->getKeyIndexes();
+        $keys           = explode("*", $key);
         $countAsterisks = count($keys) - 1;
         if (count($indexes) < $countAsterisks) {
             $indexes = array_merge($indexes, array_fill(0, $countAsterisks - count($indexes), "*"));
@@ -267,15 +258,15 @@ class Attribute
      *
      * @return string
      */
-    public function getHumanizedKey()
+    public function getHumanizedKey(): string
     {
         $primaryAttribute = $this->getPrimaryAttribute();
-        $key = str_replace('_', ' ', $this->key);
+        $key              = str_replace('_', ' ', $this->key);
 
         // Resolve key from array validation
         if ($primaryAttribute) {
             $split = explode('.', $key);
-            $key = implode(' ', array_map(function ($word) {
+            $key   = implode(' ', array_map(function ($word) {
                 if (is_numeric($word)) {
                     $word = $word + 1;
                 }
@@ -292,7 +283,7 @@ class Attribute
      * @param string $alias
      * @return void
      */
-    public function setAlias(string $alias)
+    public function setAlias(string $alias): void
     {
         $this->alias = $alias;
     }
@@ -302,7 +293,7 @@ class Attribute
      *
      * @return string|null
      */
-    public function getAlias()
+    public function getAlias(): ?string
     {
         return $this->alias;
     }

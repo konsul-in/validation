@@ -8,11 +8,9 @@ class Min extends Rule
 {
     use Traits\SizeTrait;
 
-    /** @var string */
-    protected $message = "The :attribute minimum is :min";
+    protected string $message = "The :attribute minimum is :min";
 
-    /** @var array */
-    protected $fillableParams = ['min'];
+    protected array $fillableParams = ['min'];
 
     /**
      * Check the $value is valid
@@ -20,7 +18,7 @@ class Min extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $this->requireParameters($this->fillableParams);
 

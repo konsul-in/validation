@@ -7,8 +7,7 @@ use Rakit\Validation\Rule;
 class AlphaSpaces extends Rule
 {
 
-    /** @var string */
-    protected $message = "The :attribute may only allows alphabet and spaces";
+    protected string $message = "The :attribute may only allows alphabet and spaces";
 
     /**
      * Check the $value is valid
@@ -16,7 +15,7 @@ class AlphaSpaces extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         if (! is_string($value)) {
             return false;

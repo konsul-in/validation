@@ -8,11 +8,9 @@ class Between extends Rule
 {
     use Traits\SizeTrait;
 
-    /** @var string */
-    protected $message = "The :attribute must be between :min and :max";
+    protected string $message = "The :attribute must be between :min and :max";
 
-    /** @var array */
-    protected $fillableParams = ['min', 'max'];
+    protected array $fillableParams = ['min', 'max'];
 
     /**
      * Check the $value is valid
@@ -20,7 +18,7 @@ class Between extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $this->requireParameters($this->fillableParams);
 

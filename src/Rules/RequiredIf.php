@@ -6,11 +6,9 @@ use Rakit\Validation\Rule;
 
 class RequiredIf extends Required
 {
-    /** @var bool */
-    protected $implicit = true;
+    protected bool $implicit = true;
 
-    /** @var string */
-    protected $message = "The :attribute is required";
+    protected string $message = "The :attribute is required";
 
     /**
      * Given $params and assign the $this->params
@@ -31,7 +29,7 @@ class RequiredIf extends Required
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $this->requireParameters(['field', 'values']);
 

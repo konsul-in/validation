@@ -7,8 +7,7 @@ use Rakit\Validation\Rule;
 class Url extends Rule
 {
 
-    /** @var string */
-    protected $message = "The :attribute is not valid url";
+    protected string $message = "The :attribute is not valid url";
 
     /**
      * Given $params and assign $this->params
@@ -42,7 +41,7 @@ class Url extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $schemes = $this->parameter('schemes');
 

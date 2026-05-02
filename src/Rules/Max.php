@@ -8,11 +8,9 @@ class Max extends Rule
 {
     use Traits\SizeTrait;
 
-    /** @var string */
-    protected $message = "The :attribute maximum is :max";
+    protected string $message = "The :attribute maximum is :max";
 
-    /** @var array */
-    protected $fillableParams = ['max'];
+    protected array $fillableParams = ['max'];
 
     /**
      * Check the $value is valid
@@ -20,7 +18,7 @@ class Max extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $this->requireParameters($this->fillableParams);
 

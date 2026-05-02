@@ -8,11 +8,9 @@ class Required extends Rule
 {
     use Traits\FileTrait;
 
-    /** @var bool */
-    protected $implicit = true;
+    protected bool $implicit = true;
 
-    /** @var string */
-    protected $message = "The :attribute is required";
+    protected string $message = "The :attribute is required";
 
     /**
      * Check the $value is valid
@@ -20,7 +18,7 @@ class Required extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $this->setAttributeAsRequired();
 

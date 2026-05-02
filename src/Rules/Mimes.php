@@ -1,5 +1,4 @@
 <?php
-
 namespace Rakit\Validation\Rules;
 
 use Rakit\Validation\Helper;
@@ -10,17 +9,13 @@ class Mimes extends Rule
 {
     use Traits\FileTrait;
 
-    /** @var string */
-    protected $message = "The :attribute file type must be :allowed_types";
+    protected string $message = "The :attribute file type must be :allowed_types";
 
-    /** @var string|int */
-    protected $maxSize = null;
+    protected string|int|null $maxSize = null;
 
-    /** @var string|int */
-    protected $minSize = null;
+    protected string|int|null $minSize = null;
 
-    /** @var array */
-    protected $allowedTypes = [];
+    protected array $allowedTypes = [];
 
     /**
      * Given $params and assign $this->params
@@ -57,7 +52,7 @@ class Mimes extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $allowedTypes = $this->parameter('allowed_types');
 
@@ -67,11 +62,11 @@ class Mimes extends Rule
         }
 
         // below is Required rule job
-        if (!$this->isValueFromUploadedFiles($value) or $value['error'] == UPLOAD_ERR_NO_FILE) {
+        if (! $this->isValueFromUploadedFiles($value) or $value['error'] == UPLOAD_ERR_NO_FILE) {
             return true;
         }
 
-        if (!$this->isUploadedFile($value)) {
+        if (! $this->isUploadedFile($value)) {
             return false;
         }
 
@@ -80,12 +75,12 @@ class Mimes extends Rule
             return false;
         }
 
-        if (!empty($allowedTypes)) {
+        if (! empty($allowedTypes)) {
             $guesser = new MimeTypeGuesser;
-            $ext = $guesser->getExtension($value['type']);
+            $ext     = $guesser->getExtension($value['type']);
             unset($guesser);
 
-            if (!in_array($ext, $allowedTypes)) {
+            if (! in_array($ext, $allowedTypes)) {
                 return false;
             }
         }

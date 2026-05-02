@@ -6,11 +6,9 @@ use Rakit\Validation\Rule;
 
 class Present extends Rule
 {
-    /** @var bool */
-    protected $implicit = true;
+    protected bool $implicit = true;
 
-    /** @var string */
-    protected $message = "The :attribute must be present";
+    protected string $message = "The :attribute must be present";
 
     /**
      * Check the $value is valid
@@ -18,7 +16,7 @@ class Present extends Rule
      * @param mixed $value
      * @return bool
      */
-    public function check($value): bool
+    public function check(mixed $value): bool
     {
         $this->setAttributeAsRequired();
 
