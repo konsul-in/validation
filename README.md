@@ -1,12 +1,12 @@
-Rakit Validation - PHP Standalone Validation Library
+Konsulin Validation - PHP Standalone Validation Library
 ======================================================
 
-[![Build Status](https://img.shields.io/travis/rakit/validation.svg?style=flat-square)](https://travis-ci.org/rakit/validation)
-[![Coverage Status](https://coveralls.io/repos/github/rakit/validation/badge.svg?branch=setup_coveralls)](https://coveralls.io/github/rakit/validation)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://doge.mit-license.org)
 
 
 PHP Standalone library for validating data. Inspired by `Illuminate\Validation` Laravel.
+
+**Forked from [rakit/validation](https://github.com/rakit/validation).**
 
 ## Features
 
@@ -19,7 +19,7 @@ PHP Standalone library for validating data. Inspired by `Illuminate\Validation` 
 
 ## Requirements
 
-* PHP 7.0 or higher
+* PHP 8.4 or higher
 * Composer for installation
 
 ## Quick Start

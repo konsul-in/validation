@@ -1,5 +1,5 @@
 {
-  "name": "rakit/validation",
+  "name": "konsul-in/validation",
   "description": "PHP Laravel like standalone validation library",
   "license": "MIT",
   "authors": [
@@ -15,7 +15,10 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Rakit\\Validation\\Tests\\": ["tests", "tests/Fixtures"]
+      "Rakit\\Validation\\Tests\\": [
+        "tests",
+        "tests/Fixtures"
+      ]
     }
   },
   "require": {
@@ -29,8 +32,8 @@
   },
   "scripts": {
     "test": [
-        "phpunit",
-        "phpcs"
+      "phpunit",
+      "phpcs"
     ]
   }
 }
